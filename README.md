@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/badge/100%25-local-black?style=flat-square" alt="100% local">
 </p>
 
-Your voice belongs on your Mac.
+Press. Speak. Done. Your voice belongs on your Mac.
 
 Press the **right ⌘ key**, speak naturally, press it again, and your words are transcribed on-device and pasted into whatever app you're using.
 
@@ -82,12 +82,12 @@ Text is pasted exactly as Whisper transcribes it, including punctuation and capi
 
 VoySnap works out of the box. To customize it, edit `~/Library/Application Support/VoySnap/config.json`:
 
-| Key          | Description                                              |
-| ------------ | -------------------------------------------------------- |
-| `language`   | `"auto"` (default), or a code such as `"en"` / `"fr"`    |
-| `model_path` | path to a different whisper model                        |
-| `vocabulary` | custom words, names, or jargon to recognize better       |
-| `snippets`   | `{ "spoken phrase": "replacement" }` text expansions     |
+| Key          | Description                                           |
+| ------------ | ----------------------------------------------------- |
+| `language`   | `"auto"` (default), or a code such as `"en"` / `"fr"` |
+| `model_path` | path to a different whisper model                     |
+| `vocabulary` | custom words, names, or jargon to recognize better    |
+| `snippets`   | `{ "spoken phrase": "replacement" }` text expansions  |
 
 All transcription runs locally via [`whisper.cpp`](https://github.com/ggerganov/whisper.cpp). See [CLAUDE.md](CLAUDE.md) for architecture and design notes.
 
