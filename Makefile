@@ -5,6 +5,7 @@
 #   make model     # one-time: download the default speech model
 #   make app       # build the Go binary, assemble VoySnap.app, ad-hoc codesign
 #   make run       # launch the app (menu-bar icon appears)
+#   make release   # zip the signed app into dist/VoySnap.zip for a GitHub Release
 
 APP_NAME    := VoySnap
 BUNDLE_ID   := com.kzkr.voysnap
@@ -12,6 +13,7 @@ EXECUTABLE  := voysnap
 
 DIST        := dist
 APP_DIR     := $(DIST)/$(APP_NAME).app
+DIST_ZIP    := $(DIST)/$(APP_NAME).zip
 CONTENTS    := $(APP_DIR)/Contents
 MACOS_DIR   := $(CONTENTS)/MacOS
 RES_DIR     := $(CONTENTS)/Resources
@@ -30,7 +32,7 @@ MODEL_NAME  := ggml-large-v3-turbo.bin
 MODEL_URL   := https://huggingface.co/ggerganov/whisper.cpp/resolve/main/$(MODEL_NAME)
 MODEL_PATH  := $(MODELS_DIR)/$(MODEL_NAME)
 
-.PHONY: all app build bundle sign signing-identity run install icon whisper model clean clean-app
+.PHONY: all app build bundle sign signing-identity run install release icon whisper model clean clean-app
 
 all: app
 
@@ -142,6 +144,16 @@ install: app model
 	rm -rf /Applications/$(APP_NAME).app
 	cp -R $(APP_DIR) /Applications/$(APP_NAME).app
 	@echo ">> installed to /Applications/$(APP_NAME).app — launch it from Launchpad/Spotlight"
+
+## release: zip the signed .app into dist/VoySnap.zip for distribution. Upload
+## the zip to a GitHub Release as asset "$(APP_NAME).zip"; install.sh pulls it
+## from releases/latest. The model is NOT bundled — install.sh fetches it on
+## first run — so the artifact stays small (~34 MB).
+release: app
+	@rm -f "$(DIST_ZIP)"
+	ditto -c -k --keepParent "$(APP_DIR)" "$(DIST_ZIP)"
+	@echo ">> packaged $(DIST_ZIP) ($$(du -h "$(DIST_ZIP)" | cut -f1))"
+	@echo ">> create a release:  gh release create vX.Y.Z \"$(DIST_ZIP)\" --title vX.Y.Z"
 
 clean-app:
 	rm -rf $(DIST)

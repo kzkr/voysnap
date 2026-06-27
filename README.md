@@ -43,12 +43,10 @@ Nothing leaves your Mac. The right ⌘ key still works normally as a modifier in
 ## Install
 
 ```bash
-git clone git@github.com:kzkr/voysnap.git
-cd voysnap
-make install
+curl -fsSL https://raw.githubusercontent.com/kzkr/voysnap/main/install.sh | bash
 ```
 
-`make install` does everything: builds `whisper.cpp`, downloads the model (~1.5 GB), and installs **VoySnap.app** into `/Applications`. The first build takes a few minutes; after that it's nearly instant.
+That's it — no Xcode, no Go, no build step. The installer drops **VoySnap.app** into `/Applications`, downloads the speech model (~1.5 GB) on first run, and launches it.
 
 On first launch, macOS asks for two permissions:
 
@@ -58,14 +56,18 @@ On first launch, macOS asks for two permissions:
 That's it.
 
 <details>
-<summary>Requirements</summary>
+<summary>Build from source</summary>
 <br>
 
-- macOS 13+ · Apple Silicon
-- [Homebrew](https://brew.sh)
-- Go 1.24+
-- CMake
-- Xcode Command Line Tools (`xcode-select --install`)
+Requires macOS 13+ · Apple Silicon · [Homebrew](https://brew.sh) · Go 1.24+ · CMake · Xcode Command Line Tools (`xcode-select --install`).
+
+```bash
+git clone git@github.com:kzkr/voysnap.git
+cd voysnap
+make install
+```
+
+`make install` builds `whisper.cpp`, downloads the model, signs the app, and installs it into `/Applications`. The first build takes a few minutes; after that it's nearly instant.
 
 </details>
 
