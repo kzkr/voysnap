@@ -96,4 +96,4 @@ Just **press, speak, done.**
 
 ## License
 
-[MIT](LICENSE) © [kzkr](https://github.com/kzkr) — a South Computer Company project.
+[MIT](LICENSE)
