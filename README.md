@@ -1,40 +1,52 @@
-# VoySnap
+<p align="center">
+  <img height="100" src="https://github.com/user-attachments/assets/0c9c9b26-4333-43c2-abf3-1d9ba516778d" alt="VoySnap — press the right Command key, speak, and your words are typed for you."/>
+</p>
 
-> **Press. Speak. Done.**
+<h1 align="center">VoySnap</h1>
 
-Free, open-source, fully local voice dictation for macOS.
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-black?style=flat-square" alt="License"></a>
+  <img src="https://img.shields.io/badge/platform-macOS%20·%20Apple%20Silicon-black?style=flat-square" alt="Platform">
+  <img src="https://img.shields.io/badge/100%25-local-black?style=flat-square" alt="100% local">
+</p>
 
-Press the **right ⌘ key**, speak naturally, press it again — your words are
-transcribed on-device and pasted straight into whatever app you're using.
+Most dictation tools send your voice to the cloud. VoySnap doesn't.
 
-**No cloud. No account. No subscriptions. No word limits.**
+Press the **right ⌘ key**, speak naturally, press it again — your words are transcribed on-device and pasted straight into whatever app you're using. No cloud, no account, no subscriptions, no word limits.
 
-![Platform: macOS Apple Silicon](https://img.shields.io/badge/platform-macOS%20·%20Apple%20Silicon-black)
-![License: MIT](https://img.shields.io/badge/license-MIT-black)
+## How it works
 
-## Features
+**1. Press to record** — a native `CGEventTap` catches a quick tap of the right ⌘ key. The menu-bar icon turns red.
 
-- 🎙️ **Dictate anywhere** — pastes into the focused text field of any app, or shows a popup when you're on the desktop.
-- ⚡ **Blazing fast** — [`whisper.cpp`](https://github.com/ggerganov/whisper.cpp) with Metal on Apple Silicon: over **30× faster than real time**.
-- 🔒 **100% private** — runs entirely on your Mac. Your voice never leaves your device.
-- 🌍 **Multilingual** — auto-detects the language you speak and writes it back in that language.
-- 🪶 **Minimal** — a tiny menu-bar app. Zero onboarding, zero accounts, zero distractions.
+**2. Speak** — `malgo` captures your mic at 16 kHz, fully on-device.
 
-## Installation
+**3. Press again** — `whisper.cpp` transcribes locally with Metal acceleration, over **30× faster than real time**.
 
-**Requirements:** macOS 13+ · Apple Silicon · [Homebrew](https://brew.sh) · Go 1.24+ · CMake · Xcode Command Line Tools
+**4. Done** — the text is pasted into the active app via a synthesized `⌘V`, and left on your clipboard.
+
+Nothing leaves your Mac. The right ⌘ key still works normally as a modifier in keyboard shortcuts — only a quick standalone tap triggers dictation.
+
+## Why VoySnap
+
+🔒 **Private by design** — runs entirely on your Mac. Your voice never touches a server.
+
+💸 **Zero cost** — open-source, open-weight model, no API keys, no subscriptions, no limits.
+
+⚡ **Blazing fast** — Metal-accelerated `whisper.cpp` on Apple Silicon transcribes faster than you can re-read it.
+
+🌍 **Multilingual** — auto-detects the language you speak and writes it back in that language.
+
+🪶 **Invisible** — a tiny menu-bar app. Zero onboarding, zero accounts, zero distractions.
+
+## Install
 
 ```bash
-xcode-select --install        # if you don't have the Xcode tools yet
-
 git clone git@github.com:kzkr/voysnap.git
 cd voysnap
 make install
 ```
 
-`make install` does everything: builds `whisper.cpp`, downloads the model
-(~1.5 GB), and installs **VoySnap.app** into `/Applications`. The first build
-takes a few minutes; after that it's nearly instant.
+`make install` does everything: builds `whisper.cpp`, downloads the model (~1.5 GB), and installs **VoySnap.app** into `/Applications`. The first build takes a few minutes; after that it's nearly instant.
 
 On first launch, macOS asks for two permissions:
 
@@ -43,6 +55,18 @@ On first launch, macOS asks for two permissions:
 
 That's it.
 
+<details>
+<summary>Requirements</summary>
+<br>
+
+- macOS 13+ · Apple Silicon
+- [Homebrew](https://brew.sh)
+- Go 1.24+
+- CMake
+- Xcode Command Line Tools (`xcode-select --install`)
+
+</details>
+
 ## Usage
 
 1. Put your cursor where you want to type.
@@ -50,49 +74,20 @@ That's it.
 3. Speak.
 4. Tap **right ⌘** again — your text appears.
 
-A quick standalone tap toggles dictation; using right ⌘ as a modifier in
-keyboard shortcuts still works normally. Text is pasted exactly as transcribed —
-whisper handles punctuation and capitalization — and also left on your clipboard.
+Text is pasted exactly as transcribed (whisper handles punctuation and capitalization). When nothing editable is focused — e.g. on the desktop — VoySnap shows the result in a popup and leaves it on your clipboard instead.
 
 ## Configuration
 
-VoySnap works out of the box. To customize it, edit:
+VoySnap works out of the box. To customize it, edit `~/Library/Application Support/VoySnap/config.json`:
 
-```text
-~/Library/Application Support/VoySnap/config.json
-```
+| Key          | Description                                              |
+| ------------ | -------------------------------------------------------- |
+| `language`   | `"auto"` (default), or a code such as `"en"` / `"fr"`    |
+| `model_path` | path to a different whisper model                        |
+| `vocabulary` | custom words, names, or jargon to recognize better       |
+| `snippets`   | `{ "spoken phrase": "replacement" }` text expansions     |
 
-| Key          | Description                                                      |
-| ------------ | ---------------------------------------------------------------- |
-| `language`   | `"auto"` (default), or a code such as `"en"` / `"fr"`            |
-| `model_path` | path to a different whisper model                                |
-| `vocabulary` | custom words, names, or jargon to recognize better               |
-| `snippets`   | `{ "spoken phrase": "replacement" }` text expansions             |
-
-## How it works
-
-VoySnap is a lightweight Go + `cgo` menu-bar app:
-
-- a native `CGEventTap` detects the **right ⌘** tap,
-- `malgo` captures the mic at 16 kHz,
-- `whisper.cpp` transcribes locally with Metal,
-- the result is pasted via a synthesized `⌘V`.
-
-See [CLAUDE.md](CLAUDE.md) for architecture and design notes.
-
-## Why VoySnap?
-
-Built-in macOS dictation leans on Apple's services, and most AI dictation tools
-want an account, a subscription, or your audio in their cloud.
-
-VoySnap is different:
-
-- ✅ Runs entirely on your Mac
-- ✅ Free and open source
-- ✅ Works in every application
-- ✅ No accounts, subscriptions, or usage limits
-
-Just **press, speak, done.**
+All inference runs locally via [`whisper.cpp`](https://github.com/ggerganov/whisper.cpp). See [CLAUDE.md](CLAUDE.md) for architecture and design notes.
 
 ## License
 
