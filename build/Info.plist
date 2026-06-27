@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key>
+	<string>SilentRec</string>
+	<key>CFBundleDisplayName</key>
+	<string>SilentRec</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.kzkr.silentrec</string>
+	<key>CFBundleExecutable</key>
+	<string>silentrec</string>
+	<key>CFBundleIconFile</key>
+	<string>icon</string>
+	<key>CFBundleVersion</key>
+	<string>0.1.0</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.1.0</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>13.0</string>
+	<!-- Menu-bar app: no Dock icon, no main window in the app switcher. -->
+	<key>LSUIElement</key>
+	<true/>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<!-- Shown in the macOS microphone permission prompt on first recording. -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>SilentRec records your microphone to transcribe your speech to text on-device.</string>
+</dict>
+</plist>
