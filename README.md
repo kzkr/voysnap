@@ -1,4 +1,4 @@
-# SilentRec
+# Voysnap
 
 **Free, fully-local, offline voice-to-text dictation for macOS.**
 
@@ -23,13 +23,13 @@ Requires macOS 13+ (Apple Silicon), [Homebrew](https://brew.sh), Go 1.24+,
 `cmake`, and the Xcode command-line tools (`xcode-select --install`).
 
 ```sh
-git clone git@github.com:kzkr/silentrec.git
-cd silentrec
+git clone git@github.com:kzkr/voysnap.git
+cd voysnap
 make install
 ```
 
 `make install` does everything — builds whisper.cpp, downloads the model
-(~1.5 GB), and installs **SilentRec.app** to `/Applications`. The first build
+(~1.5 GB), and installs **Voysnap.app** to `/Applications`. The first build
 takes a few minutes; after that it's instant.
 
 On first launch, grant **Microphone** and **Accessibility** when asked (the
@@ -48,8 +48,8 @@ punctuates and capitalizes) and also left on the clipboard.
 
 ## Configuration
 
-SilentRec needs no setup. Power users can optionally edit
-`~/Library/Application Support/SilentRec/config.json`:
+Voysnap needs no setup. Power users can optionally edit
+`~/Library/Application Support/Voysnap/config.json`:
 
 | Key | Description |
 | --- | --- |

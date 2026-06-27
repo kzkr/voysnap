@@ -17,7 +17,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/kzkr/silentrec/internal/config"
+	"github.com/kzkr/voysnap/internal/config"
 )
 
 // ErrNotTrusted means the process lacks Accessibility permission, so the event
@@ -27,8 +27,8 @@ var ErrNotTrusted = errors.New("hotkey: Accessibility permission required")
 // fired is the callback invoked on each detected tap. Set once in New.
 var fired func()
 
-//export silentrecHotkeyFired
-func silentrecHotkeyFired() {
+//export voysnapHotkeyFired
+func voysnapHotkeyFired() {
 	if fired != nil {
 		fired()
 	}
@@ -47,12 +47,12 @@ func New(cfg config.Hotkey, onPress func()) (*Hotkey, error) {
 	go func() {
 		// The tap must be created and run on the same OS thread.
 		runtime.LockOSThread()
-		if int(C.silentrec_hotkey_create(C.int(keycode))) != 0 {
+		if int(C.voysnap_hotkey_create(C.int(keycode))) != 0 {
 			errc <- ErrNotTrusted
 			return
 		}
 		errc <- nil
-		C.silentrec_hotkey_run() // blocks until Close
+		C.voysnap_hotkey_run() // blocks until Close
 	}()
 
 	if err := <-errc; err != nil {
@@ -63,7 +63,7 @@ func New(cfg config.Hotkey, onPress func()) (*Hotkey, error) {
 
 // Close stops the event tap.
 func (h *Hotkey) Close() {
-	C.silentrec_hotkey_stop()
+	C.voysnap_hotkey_stop()
 }
 
 // keycodeFor maps a config key name to a macOS virtual keycode. Defaults to the

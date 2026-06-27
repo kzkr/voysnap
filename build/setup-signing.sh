@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Creates a stable self-signed code-signing identity for SilentRec in a dedicated
+# Creates a stable self-signed code-signing identity for Voysnap in a dedicated
 # keychain. Signing with a stable identity (instead of ad-hoc "-") keeps the
 # app's code signature constant across rebuilds, so macOS TCC permissions
 # (Accessibility, Input Monitoring, Microphone) persist and don't need
@@ -8,9 +8,9 @@
 # Run once:  ./build/setup-signing.sh
 set -euo pipefail
 
-IDENTITY="SilentRec Local Dev"
-KEYCHAIN="silentrec-signing.keychain-db"
-KEYCHAIN_PASS="silentrec"
+IDENTITY="Voysnap Local Dev"
+KEYCHAIN="voysnap-signing.keychain-db"
+KEYCHAIN_PASS="voysnap"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 
@@ -30,7 +30,7 @@ distinguished_name = dn
 x509_extensions = ext
 prompt = no
 [dn]
-CN = SilentRec Local Dev
+CN = Voysnap Local Dev
 [ext]
 keyUsage = critical, digitalSignature
 extendedKeyUsage = critical, codeSigning
@@ -44,7 +44,7 @@ openssl req -x509 -newkey rsa:2048 -nodes \
 # -legacy: Apple's Security framework can't verify OpenSSL 3's default PKCS12
 # MAC, so export with the legacy (SHA1/3DES) algorithms it understands.
 openssl pkcs12 -export -out "$WORK/identity.p12" -legacy \
-	-inkey "$WORK/key.pem" -in "$WORK/cert.pem" -passout pass:silentrec
+	-inkey "$WORK/key.pem" -in "$WORK/cert.pem" -passout pass:voysnap
 
 echo ">> creating signing keychain"
 # Recreate cleanly if a stale one exists.
@@ -54,7 +54,7 @@ security set-keychain-settings "$KEYCHAIN" # disable auto-lock timeout
 security unlock-keychain -p "$KEYCHAIN_PASS" "$KEYCHAIN"
 
 echo ">> importing identity"
-security import "$WORK/identity.p12" -k "$KEYCHAIN" -P "silentrec" -T /usr/bin/codesign -A
+security import "$WORK/identity.p12" -k "$KEYCHAIN" -P "voysnap" -T /usr/bin/codesign -A
 # Allow codesign to use the key without an interactive prompt.
 security set-key-partition-list -S apple-tool:,apple:,codesign: \
 	-s -k "$KEYCHAIN_PASS" "$KEYCHAIN" >/dev/null

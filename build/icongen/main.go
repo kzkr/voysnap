@@ -1,4 +1,4 @@
-// Command icongen renders SilentRec's icons from the exact "S" monogram defined
+// Command icongen renders Voysnap's icons from the exact "S" monogram defined
 // in build/logo-source.svg (four equal squares with 180° rotational symmetry):
 //
 //	app       → 1024×1024 white rounded square + black S (for icon.icns)

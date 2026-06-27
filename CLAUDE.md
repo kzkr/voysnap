@@ -4,7 +4,7 @@ Guidance for working in this repo. Read this before making changes.
 
 ## What this is
 
-**SilentRec** — a free, fully-local, offline voice-to-text dictation menu-bar app
+**Voysnap** — a free, fully-local, offline voice-to-text dictation menu-bar app
 for macOS. Tap the **right ⌘ key** to start recording, tap it again to stop; the
 audio is transcribed on-device with whisper.cpp (Metal), lightly cleaned, and
 pasted into whatever text field is focused. If nothing editable is focused, the
@@ -13,10 +13,10 @@ text is shown in a popup (and left on the clipboard).
 It's a personal project of Valentin's "South Computer Company" lab — a local,
 owned replacement for paid tools like Superwhisper / Wispr Flow.
 
-> Naming note: the project was renamed from "Voice" to **SilentRec**. The Go
-> module is `github.com/kzkr/silentrec` and the bundle id is
-> `com.kzkr.silentrec`. The **directory on disk is still `~/Desktop/voice`** —
-> that's fine; don't rename it (tooling paths depend on it).
+> Naming note: the project was renamed "Voice" → "SilentRec" → **Voysnap**. The
+> Go module is `github.com/kzkr/voysnap` and the bundle id is
+> `com.kzkr.voysnap`. The **directory on disk is unchanged** — that's fine; don't
+> rename it (tooling paths depend on it).
 
 ## Platform & constraints
 
@@ -70,15 +70,15 @@ owned replacement for paid tools like Superwhisper / Wispr Flow.
   by the menu-bar icon (blinking red). The menu has a single **Quit** item.
 - **Windows are forced light** with a **black accent** (the logo colour), not
   Fyne's default dark theme + blue. This is a deliberate custom theme
-  (`internal/app/theme.go`, `silentTheme`) set in `New`; don't revert it to the
+  (`internal/app/theme.go`, `voysnapTheme`) set in `New`; don't revert it to the
   system theme. The menu-bar tray icon is unaffected (it's a macOS template that
   adapts to the menu bar independently of the Fyne theme).
 
 ## Layout
 
 ```
-cmd/silentrec        entrypoint (main)
-internal/config      load/save settings (~/Library/Application Support/SilentRec/config.json)
+cmd/voysnap        entrypoint (main)
+internal/config      load/save settings (~/Library/Application Support/Voysnap/config.json)
 internal/hotkey      right-⌘ tap detection (CGEventTap; chotkey.h/.m + hotkey.go)
 internal/audio       mic capture via malgo → 16 kHz mono float32
 internal/transcribe  whisper.cpp wrapper (cgo: cwhisper.h/.c + transcribe.go)
@@ -99,7 +99,7 @@ models/              downloaded model (gitignored)
 make install        # everything: signing identity + whisper.cpp + model + build + install
 make run            # same, but launches from dist/ instead of installing
 make whisper        # (sub-step) clone + build whisper.cpp static libs (Metal)
-make model          # (sub-step) download the model into ~/Library/Application Support/SilentRec/models
+make model          # (sub-step) download the model into ~/Library/Application Support/Voysnap/models
 make icon           # force-regenerate all icons from build/logo-source.svg
 ```
 
@@ -119,7 +119,7 @@ libs to exist, since the cgo in `internal/transcribe` links them via
 - **Code signing controls permission persistence.** macOS TCC keys permissions
   to the code-signing identity. Ad-hoc signing (`-`) changes the identity every
   build, so permissions reset every rebuild. We sign with a **stable self-signed
-  identity** ("SilentRec Local Dev" in `silentrec-signing.keychain-db`, created
+  identity** ("Voysnap Local Dev" in `voysnap-signing.keychain-db`, created
   by `build/setup-signing.sh`). The Makefile `sign` target uses it automatically.
   Don't switch to ad-hoc.
 - **Two different permissions are involved:**
@@ -128,8 +128,8 @@ libs to exist, since the cgo in `internal/transcribe` links them via
   - **Microphone** — for recording (prompted on first record).
   The app prompts for Accessibility on launch if missing.
 - **Changing the bundle id resets all TCC permissions** (the user must re-grant).
-  Avoid changing `com.kzkr.silentrec` unless necessary.
-- **Launch via `open SilentRec.app`, not by running the binary directly.** Running
+  Avoid changing `com.kzkr.voysnap` unless necessary.
+- **Launch via `open Voysnap.app`, not by running the binary directly.** Running
   the binary from a terminal makes macOS attribute permissions to the terminal,
   not the app, giving false "not trusted" results.
 - **Menu-bar icon coloring:** Fyne renders a tray icon as an adaptive *template*
@@ -147,7 +147,7 @@ libs to exist, since the cgo in `internal/transcribe` links them via
 
 - Keep it simple and minimal — Valentin values simplicity and may open-source this.
 - Match the existing style: small single-responsibility packages, thin cgo shims
-  with a clear C-symbol prefix (`silentrec_*`), comments explaining *why*.
+  with a clear C-symbol prefix (`voysnap_*`), comments explaining *why*.
 - Run `go build ./... && go vet ./... && go test ./... && gofmt -l .` before
   considering a change done. The `-lobjc` duplicate-library linker warning is
   benign.

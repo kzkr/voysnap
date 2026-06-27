@@ -5,18 +5,18 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 
-	"github.com/kzkr/silentrec/internal/paste"
+	"github.com/kzkr/voysnap/internal/paste"
 )
 
 // showResult displays transcribed text in a small window. This is the fallback
-// used when SilentRec can't paste (Accessibility not granted); the text is also
+// used when Voysnap can't paste (Accessibility not granted); the text is also
 // on the clipboard.
 func (a *App) showResult(text string) {
 	fyne.Do(func() {
-		w := a.fyne.NewWindow("SilentRec — Transcript")
+		w := a.fyne.NewWindow("Voysnap — Transcript")
 
 		logo := container.NewGridWrap(fyne.NewSize(34, 34), widget.NewIcon(a.iconIdle))
-		title := widget.NewRichTextFromMarkdown("## SilentRec")
+		title := widget.NewRichTextFromMarkdown("## Voysnap")
 		header := container.NewHBox(logo, title)
 
 		entry := widget.NewMultiLineEntry()

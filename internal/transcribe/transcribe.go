@@ -34,7 +34,7 @@ func Load(modelPath string) (*Transcriber, error) {
 	cPath := C.CString(modelPath)
 	defer C.free(unsafe.Pointer(cPath))
 
-	ctx := C.silentrec_init(cPath, C.bool(true))
+	ctx := C.voysnap_init(cPath, C.bool(true))
 	if ctx == nil {
 		return nil, fmt.Errorf("transcribe: failed to load model %q", modelPath)
 	}
@@ -73,7 +73,7 @@ func (t *Transcriber) Transcribe(samples []float32, language, prompt string) (st
 	}
 
 	var out *C.char
-	rc := C.silentrec_transcribe(
+	rc := C.voysnap_transcribe(
 		t.ctx,
 		(*C.float)(unsafe.Pointer(&samples[0])),
 		C.int(len(samples)),
@@ -85,7 +85,7 @@ func (t *Transcriber) Transcribe(samples []float32, language, prompt string) (st
 	if rc != 0 {
 		return "", fmt.Errorf("transcribe: whisper_full failed (code %d)", int(rc))
 	}
-	defer C.silentrec_free_text(out)
+	defer C.voysnap_free_text(out)
 
 	return C.GoString(out), nil
 }
@@ -95,7 +95,7 @@ func (t *Transcriber) Close() {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	if t.ctx != nil {
-		C.silentrec_free(t.ctx)
+		C.voysnap_free(t.ctx)
 		t.ctx = nil
 	}
 }

@@ -1,4 +1,4 @@
-// Command silentrec is a local, offline voice-to-text dictation menu-bar app for macOS.
+// Command voysnap is a local, offline voice-to-text dictation menu-bar app for macOS.
 //
 // Flow: tap the right ⌘ key to start recording, tap it again to stop. The audio
 // is transcribed locally with whisper.cpp, lightly cleaned up, and pasted into
@@ -8,7 +8,7 @@ package main
 import (
 	"log"
 
-	"github.com/kzkr/silentrec/internal/app"
+	"github.com/kzkr/voysnap/internal/app"
 )
 
 func main() {

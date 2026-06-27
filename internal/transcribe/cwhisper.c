@@ -7,16 +7,16 @@
 
 // Swallow whisper/ggml's verbose progress logging; the app surfaces state
 // through its own UI instead.
-static void silentrec_silent_log(enum ggml_log_level level, const char *text,
+static void voysnap_silent_log(enum ggml_log_level level, const char *text,
                              void *user_data) {
   (void)level;
   (void)text;
   (void)user_data;
 }
 
-void *silentrec_init(const char *model_path, bool use_gpu) {
-  whisper_log_set(silentrec_silent_log, NULL);
-  ggml_log_set(silentrec_silent_log, NULL);
+void *voysnap_init(const char *model_path, bool use_gpu) {
+  whisper_log_set(voysnap_silent_log, NULL);
+  ggml_log_set(voysnap_silent_log, NULL);
 
   struct whisper_context_params cparams = whisper_context_default_params();
   cparams.use_gpu = use_gpu;
@@ -24,7 +24,7 @@ void *silentrec_init(const char *model_path, bool use_gpu) {
   return (void *)whisper_init_from_file_with_params(model_path, cparams);
 }
 
-int silentrec_transcribe(void *vctx, const float *samples, int n_samples,
+int voysnap_transcribe(void *vctx, const float *samples, int n_samples,
                      const char *language, const char *prompt, int n_threads,
                      char **out_text) {
   struct whisper_context *ctx = (struct whisper_context *)vctx;
@@ -80,8 +80,8 @@ int silentrec_transcribe(void *vctx, const float *samples, int n_samples,
   return 0;
 }
 
-void silentrec_free(void *vctx) {
+void voysnap_free(void *vctx) {
   whisper_free((struct whisper_context *)vctx);
 }
 
-void silentrec_free_text(char *text) { free(text); }
+void voysnap_free_text(char *text) { free(text); }

@@ -1,4 +1,4 @@
-module github.com/kzkr/silentrec
+module github.com/kzkr/voysnap
 
 go 1.26.4
 

@@ -1,14 +1,14 @@
-# SilentRec — local offline voice-to-text dictation for macOS.
+# Voysnap — local offline voice-to-text dictation for macOS.
 #
 # Common flow:
 #   make whisper   # one-time: clone + build whisper.cpp static libs (Metal)
 #   make model     # one-time: download the default speech model
-#   make app       # build the Go binary, assemble SilentRec.app, ad-hoc codesign
+#   make app       # build the Go binary, assemble Voysnap.app, ad-hoc codesign
 #   make run       # launch the app (menu-bar icon appears)
 
-APP_NAME    := SilentRec
-BUNDLE_ID   := com.kzkr.silentrec
-EXECUTABLE  := silentrec
+APP_NAME    := Voysnap
+BUNDLE_ID   := com.kzkr.voysnap
+EXECUTABLE  := voysnap
 
 DIST        := dist
 APP_DIR     := $(DIST)/$(APP_NAME).app
@@ -66,7 +66,7 @@ model:
 ## build: compile the Go binary. Builds whisper.cpp first (cgo links it) and
 ## generates the embedded menu-bar icons.
 build: $(WHISPER_LIB) internal/app/tray-idle.png internal/app/tray-rec.png
-	go build -o $(DIST)/$(EXECUTABLE) ./cmd/silentrec
+	go build -o $(DIST)/$(EXECUTABLE) ./cmd/voysnap
 
 # Menu-bar icons embedded into the binary via go:embed.
 internal/app/tray-idle.png: build/icongen/main.go
@@ -97,7 +97,7 @@ icon:
 	rm -f build/icon.icns internal/app/tray-idle.png internal/app/tray-rec.png
 	$(MAKE) build/icon.icns internal/app/tray-idle.png internal/app/tray-rec.png
 
-## bundle: assemble dist/SilentRec.app around the built binary.
+## bundle: assemble dist/Voysnap.app around the built binary.
 bundle: build build/icon.icns
 	@rm -rf $(APP_DIR)
 	@mkdir -p $(MACOS_DIR) $(RES_DIR)
@@ -107,8 +107,8 @@ bundle: build build/icon.icns
 	@echo ">> bundled $(APP_DIR)"
 
 # Stable self-signed identity that keeps TCC permission grants across rebuilds.
-SIGN_IDENTITY := SilentRec Local Dev
-SIGN_KEYCHAIN := silentrec-signing.keychain-db
+SIGN_IDENTITY := Voysnap Local Dev
+SIGN_KEYCHAIN := voysnap-signing.keychain-db
 
 ## signing-identity: create the stable self-signed identity if missing (idempotent).
 signing-identity:
@@ -119,7 +119,7 @@ signing-identity:
 sign: signing-identity bundle
 	@if security find-identity "$(SIGN_KEYCHAIN)" 2>/dev/null | grep -q "$(SIGN_IDENTITY)"; then \
 		echo ">> signing with '$(SIGN_IDENTITY)'"; \
-		security unlock-keychain -p silentrec "$(SIGN_KEYCHAIN)" 2>/dev/null || true; \
+		security unlock-keychain -p voysnap "$(SIGN_KEYCHAIN)" 2>/dev/null || true; \
 		codesign --force --deep --sign "$(SIGN_IDENTITY)" --keychain "$(SIGN_KEYCHAIN)" \
 			--entitlements build/entitlements.plist $(APP_DIR); \
 	else \
@@ -136,7 +136,7 @@ run: app model
 	@killall $(EXECUTABLE) 2>/dev/null || true
 	open $(APP_DIR)
 
-## install: copy SilentRec.app into /Applications so it launches like any other app.
+## install: copy Voysnap.app into /Applications so it launches like any other app.
 install: app model
 	@killall $(EXECUTABLE) 2>/dev/null || true
 	rm -rf /Applications/$(APP_NAME).app

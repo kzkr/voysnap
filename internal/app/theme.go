@@ -7,17 +7,17 @@ import (
 	"fyne.io/fyne/v2/theme"
 )
 
-// brandColor is the black from the SilentRec logo, used as the accent instead of
+// brandColor is the black from the Voysnap logo, used as the accent instead of
 // Fyne's default blue.
 var brandColor = color.NRGBA{R: 0x1a, G: 0x1a, B: 0x1a, A: 0xff}
 
-// silentTheme forces a light (white) appearance with a black accent, regardless
+// voysnapTheme forces a light (white) appearance with a black accent, regardless
 // of the system's dark mode, so the windows match the logo's look.
-type silentTheme struct{}
+type voysnapTheme struct{}
 
-var _ fyne.Theme = silentTheme{}
+var _ fyne.Theme = voysnapTheme{}
 
-func (silentTheme) Color(name fyne.ThemeColorName, _ fyne.ThemeVariant) color.Color {
+func (voysnapTheme) Color(name fyne.ThemeColorName, _ fyne.ThemeVariant) color.Color {
 	switch name {
 	case theme.ColorNamePrimary:
 		return brandColor
@@ -35,6 +35,6 @@ func (silentTheme) Color(name fyne.ThemeColorName, _ fyne.ThemeVariant) color.Co
 	return theme.DefaultTheme().Color(name, theme.VariantLight)
 }
 
-func (silentTheme) Font(s fyne.TextStyle) fyne.Resource     { return theme.DefaultTheme().Font(s) }
-func (silentTheme) Icon(n fyne.ThemeIconName) fyne.Resource { return theme.DefaultTheme().Icon(n) }
-func (silentTheme) Size(n fyne.ThemeSizeName) float32       { return theme.DefaultTheme().Size(n) }
+func (voysnapTheme) Font(s fyne.TextStyle) fyne.Resource     { return theme.DefaultTheme().Font(s) }
+func (voysnapTheme) Icon(n fyne.ThemeIconName) fyne.Resource { return theme.DefaultTheme().Icon(n) }
+func (voysnapTheme) Size(n fyne.ThemeSizeName) float32       { return theme.DefaultTheme().Size(n) }

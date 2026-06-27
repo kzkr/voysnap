@@ -21,13 +21,13 @@ import (
 	"fyne.io/fyne/v2/driver/desktop"
 	"fyne.io/fyne/v2/theme"
 
-	"github.com/kzkr/silentrec/internal/audio"
-	"github.com/kzkr/silentrec/internal/cleanup"
-	"github.com/kzkr/silentrec/internal/config"
-	"github.com/kzkr/silentrec/internal/hotkey"
-	"github.com/kzkr/silentrec/internal/paste"
-	"github.com/kzkr/silentrec/internal/snippets"
-	"github.com/kzkr/silentrec/internal/transcribe"
+	"github.com/kzkr/voysnap/internal/audio"
+	"github.com/kzkr/voysnap/internal/cleanup"
+	"github.com/kzkr/voysnap/internal/config"
+	"github.com/kzkr/voysnap/internal/hotkey"
+	"github.com/kzkr/voysnap/internal/paste"
+	"github.com/kzkr/voysnap/internal/snippets"
+	"github.com/kzkr/voysnap/internal/transcribe"
 )
 
 //go:embed tray-idle.png
@@ -75,13 +75,13 @@ type App struct {
 // New constructs the app: loads config, initializes audio, builds UI, and kicks
 // off asynchronous model loading. Must be called on the main goroutine.
 func New() (*App, error) {
-	fa := fyneapp.NewWithID("com.kzkr.silentrec")
+	fa := fyneapp.NewWithID("com.kzkr.voysnap")
 	desk, ok := fa.(desktop.App)
 	if !ok {
-		return nil, fmt.Errorf("SilentRec requires a desktop environment with a system tray")
+		return nil, fmt.Errorf("Voysnap requires a desktop environment with a system tray")
 	}
 	// White windows with a black accent, matching the logo (not the dark theme).
-	fa.Settings().SetTheme(silentTheme{})
+	fa.Settings().SetTheme(voysnapTheme{})
 
 	cfg, err := config.Load()
 	if err != nil {
@@ -119,16 +119,16 @@ func New() (*App, error) {
 	// hasn't been granted yet.
 	if !paste.AccessibilityTrusted(false) {
 		paste.AccessibilityTrusted(true)
-		log.Printf("grant Accessibility permission to SilentRec for auto-paste, then relaunch")
+		log.Printf("grant Accessibility permission to Voysnap for auto-paste, then relaunch")
 	}
 
 	hk, err := hotkey.New(cfg.Hotkey, a.onHotkey)
 	if err != nil {
 		if errors.Is(err, hotkey.ErrNotTrusted) {
 			// Trigger the macOS Accessibility prompt; the tap works after the
-			// user grants permission and relaunches SilentRec.
+			// user grants permission and relaunches Voysnap.
 			paste.AccessibilityTrusted(true)
-			log.Printf("hotkey: grant Accessibility permission to SilentRec, then relaunch")
+			log.Printf("hotkey: grant Accessibility permission to Voysnap, then relaunch")
 		} else {
 			log.Printf("hotkey: %v", err)
 		}
@@ -241,7 +241,7 @@ func (a *App) toIdle() {
 // installMenu sets the (static) menu-bar menu. Recording state is conveyed by
 // the icon, not by menu text.
 func (a *App) installMenu() {
-	menu := fyne.NewMenu("SilentRec",
+	menu := fyne.NewMenu("Voysnap",
 		fyne.NewMenuItem("Quit", func() { a.fyne.Quit() }),
 	)
 	fyne.Do(func() { a.desk.SetSystemTrayMenu(menu) })

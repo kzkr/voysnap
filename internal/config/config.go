@@ -1,6 +1,6 @@
-// Package config loads and persists user settings for SilentRec.
+// Package config loads and persists user settings for Voysnap.
 //
-// Settings live in ~/Library/Application Support/SilentRec/config.json. Missing or
+// Settings live in ~/Library/Application Support/Voysnap/config.json. Missing or
 // unset fields fall back to sensible defaults, so a fresh install works with no
 // configuration.
 package config
@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	appName          = "SilentRec"
+	appName          = "Voysnap"
 	defaultModelName = "ggml-large-v3-turbo.bin"
 )
 
@@ -56,7 +56,7 @@ func Default() Config {
 	}
 }
 
-// Dir is the application support directory for SilentRec, created on demand.
+// Dir is the application support directory for Voysnap, created on demand.
 func Dir() (string, error) {
 	base, err := os.UserConfigDir() // ~/Library/Application Support on macOS
 	if err != nil {

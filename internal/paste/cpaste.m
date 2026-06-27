@@ -7,7 +7,7 @@
 static pid_t gFrontmostPID = -1;
 static bool gFrontmostIsFinder = false;
 
-void silentrec_clipboard_set(const char *text) {
+void voysnap_clipboard_set(const char *text) {
   NSPasteboard *pb = [NSPasteboard generalPasteboard];
   [pb clearContents];
   if (text != NULL) {
@@ -16,7 +16,7 @@ void silentrec_clipboard_set(const char *text) {
   }
 }
 
-void silentrec_paste(void) {
+void voysnap_paste(void) {
   CGEventSourceRef src =
       CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
   const CGKeyCode kVK_ANSI_V = 0x09;
@@ -36,7 +36,7 @@ void silentrec_paste(void) {
   }
 }
 
-void silentrec_remember_frontmost(void) {
+void voysnap_remember_frontmost(void) {
   NSRunningApplication *app =
       [[NSWorkspace sharedWorkspace] frontmostApplication];
   gFrontmostPID = app ? [app processIdentifier] : -1;
@@ -47,7 +47,7 @@ void silentrec_remember_frontmost(void) {
       (bid == nil) || [bid isEqualToString:@"com.apple.finder"];
 }
 
-void silentrec_restore_frontmost(void) {
+void voysnap_restore_frontmost(void) {
   if (gFrontmostPID <= 0) {
     return;
   }
@@ -56,15 +56,15 @@ void silentrec_restore_frontmost(void) {
   [app activateWithOptions:NSApplicationActivateAllWindows];
 }
 
-// silentrec_frontmost_is_finder reports whether the app frontmost at the last
-// silentrec_remember_frontmost call was the Finder/desktop (i.e. nowhere to
+// voysnap_frontmost_is_finder reports whether the app frontmost at the last
+// voysnap_remember_frontmost call was the Finder/desktop (i.e. nowhere to
 // paste). We use the frontmost app's bundle id rather than the Accessibility API
 // because AX can't tell a pasteable app from the desktop: Electron apps (VS Code)
 // expose neither a focused element nor window, while the desktop exposes both —
 // so every AX signal gets these two cases backwards.
-bool silentrec_frontmost_is_finder(void) { return gFrontmostIsFinder; }
+bool voysnap_frontmost_is_finder(void) { return gFrontmostIsFinder; }
 
-bool silentrec_accessibility_trusted(bool prompt) {
+bool voysnap_accessibility_trusted(bool prompt) {
   NSDictionary *opts =
       @{(id)kAXTrustedCheckOptionPrompt : @(prompt)};
   return AXIsProcessTrustedWithOptions((CFDictionaryRef)opts);

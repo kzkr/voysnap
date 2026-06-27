@@ -3,9 +3,9 @@
 
 #include "chotkey.h"
 
-// Implemented in Go (//export silentrecHotkeyFired). Called when a clean tap of the
+// Implemented in Go (//export voysnapHotkeyFired). Called when a clean tap of the
 // target modifier key is detected.
-extern void silentrecHotkeyFired(void);
+extern void voysnapHotkeyFired(void);
 
 static CFMachPortRef gTap = NULL;
 static CFRunLoopSourceRef gSource = NULL;
@@ -43,7 +43,7 @@ static CGEventRef tapCallback(CGEventTapProxy proxy, CGEventType type,
       } else {
         double held = CFAbsoluteTimeGetCurrent() - gDownTime;
         if (!gConsumed && held < kTapThreshold) {
-          silentrecHotkeyFired();
+          voysnapHotkeyFired();
         }
       }
     } else if (gKeyDown) {
@@ -60,7 +60,7 @@ static CGEventRef tapCallback(CGEventTapProxy proxy, CGEventType type,
   return event;
 }
 
-int silentrec_hotkey_create(int keycode) {
+int voysnap_hotkey_create(int keycode) {
   gKeycode = keycode;
   CGEventMask mask =
       CGEventMaskBit(kCGEventFlagsChanged) | CGEventMaskBit(kCGEventKeyDown);
@@ -73,14 +73,14 @@ int silentrec_hotkey_create(int keycode) {
   return 0;
 }
 
-void silentrec_hotkey_run(void) {
+void voysnap_hotkey_run(void) {
   gRunLoop = CFRunLoopGetCurrent();
   CFRunLoopAddSource(gRunLoop, gSource, kCFRunLoopCommonModes);
   CGEventTapEnable(gTap, true);
   CFRunLoopRun();
 }
 
-void silentrec_hotkey_stop(void) {
+void voysnap_hotkey_stop(void) {
   if (gRunLoop != NULL) {
     CFRunLoopStop(gRunLoop);
   }
