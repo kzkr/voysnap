@@ -10,9 +10,11 @@
   <img src="https://img.shields.io/badge/100%25-local-black?style=flat-square" alt="100% local">
 </p>
 
-Most dictation tools send your voice to the cloud. VoySnap doesn't.
+Your voice belongs on your Mac.
 
-Press the **right ⌘ key**, speak naturally, press it again — your words are transcribed on-device and pasted straight into whatever app you're using. No cloud, no account, no subscriptions, no word limits.
+Press the **right ⌘ key**, speak naturally, press it again, and your words are transcribed on-device and pasted into whatever app you're using.
+
+No cloud. No account. No subscriptions. No word limits.
 
 ## How it works
 
@@ -22,15 +24,15 @@ Press the **right ⌘ key**, speak naturally, press it again — your words are 
 
 **3. Press again** — `whisper.cpp` transcribes locally with Metal acceleration, over **30× faster than real time**.
 
-**4. Done** — the text is pasted into the active app via a synthesized `⌘V`, and left on your clipboard.
+**4. Done** — your text is pasted into the active app and copied to your clipboard.
 
 Nothing leaves your Mac. The right ⌘ key still works normally as a modifier in keyboard shortcuts — only a quick standalone tap triggers dictation.
 
 ## Why VoySnap
 
-🔒 **Private by design** — runs entirely on your Mac. Your voice never touches a server.
+🔒 **Private by design** — every transcription happens on your Mac. Your voice never leaves your device.
 
-💸 **Zero cost** — open-source, open-weight model, no API keys, no subscriptions, no limits.
+💸 **Free forever** — open source, no subscriptions, no API keys, no limits.
 
 ⚡ **Blazing fast** — Metal-accelerated `whisper.cpp` on Apple Silicon transcribes faster than you can re-read it.
 
@@ -74,7 +76,7 @@ That's it.
 3. Speak.
 4. Tap **right ⌘** again — your text appears.
 
-Text is pasted exactly as transcribed (whisper handles punctuation and capitalization). When nothing editable is focused — e.g. on the desktop — VoySnap shows the result in a popup and leaves it on your clipboard instead.
+Text is pasted exactly as Whisper transcribes it, including punctuation and capitalization. When nothing editable is focused — e.g. on the desktop — VoySnap shows the result in a popup and leaves it on your clipboard instead.
 
 ## Configuration
 
@@ -87,7 +89,7 @@ VoySnap works out of the box. To customize it, edit `~/Library/Application Suppo
 | `vocabulary` | custom words, names, or jargon to recognize better       |
 | `snippets`   | `{ "spoken phrase": "replacement" }` text expansions     |
 
-All inference runs locally via [`whisper.cpp`](https://github.com/ggerganov/whisper.cpp). See [CLAUDE.md](CLAUDE.md) for architecture and design notes.
+All transcription runs locally via [`whisper.cpp`](https://github.com/ggerganov/whisper.cpp). See [CLAUDE.md](CLAUDE.md) for architecture and design notes.
 
 ## License
 
