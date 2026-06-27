@@ -64,14 +64,8 @@ type App struct {
 	mu    sync.Mutex
 	state state
 
-	// focusedEditable records whether a text field was focused when the current
-	// recording started; decides paste vs. popup.
-	focusedEditable bool
-
 	// blinkStop stops the recording blink goroutine (guarded by mu).
 	blinkStop chan struct{}
-
-	settingsOpen bool
 }
 
 // New constructs the app: loads config, initializes audio, builds UI, and kicks
@@ -176,9 +170,7 @@ func (a *App) onHotkey() {
 }
 
 func (a *App) startRecording() {
-	// Remember the focused app (and whether it's a text field) before recording.
-	paste.RememberTarget()
-	a.focusedEditable = paste.FocusedWasEditable()
+	paste.RememberTarget() // so focus can be restored before pasting
 	if err := a.recorder.Start(); err != nil {
 		log.Printf("record start: %v", err)
 		a.toIdle()
@@ -216,9 +208,11 @@ func (a *App) finish() {
 		return
 	}
 
-	// Paste into the focused field when one was focused at record start;
-	// otherwise show the text in a popup.
-	if a.focusedEditable {
+	// Always paste into wherever the cursor is. The transcript is also left on
+	// the clipboard (see paste.PasteText) so nothing is lost if it lands nowhere.
+	// Only when Accessibility is missing (can't synthesize Cmd+V) do we fall
+	// back to showing the text in a popup.
+	if paste.AccessibilityTrusted(false) {
 		paste.PasteText(text)
 		return
 	}
@@ -239,7 +233,6 @@ func (a *App) toIdle() {
 // the icon, not by menu text.
 func (a *App) installMenu() {
 	menu := fyne.NewMenu("SilentRec",
-		fyne.NewMenuItem("Settings…", func() { a.showSettings() }),
 		fyne.NewMenuItem("Quit", func() { a.fyne.Quit() }),
 	)
 	fyne.Do(func() { a.desk.SetSystemTrayMenu(menu) })

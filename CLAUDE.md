@@ -47,15 +47,21 @@ owned replacement for paid tools like Superwhisper / Wispr Flow.
   key (keycode 54) and ignores it when used as a modifier in a shortcut, so the
   key keeps working normally. This is why we don't use `golang.design/x/hotkey`.
 - **Paste = clipboard + synthesized Cmd+V, with focus restore** (`internal/paste`).
-  At record start we remember the frontmost app and whether its focused element
-  is an editable text field (via the Accessibility API); on finish we restore
-  focus to that app, set the clipboard, send Cmd+V, then restore the previous
-  clipboard. Editability is captured *before* recording so our own UI can't skew
-  it. If no editable field was focused → popup fallback.
-- **One cohesive `internal/app` package** owns the state machine and all Fyne UI
-  (menu-bar item, result popup, settings). UI mutations run on Fyne's main loop
-  via `fyne.Do`. There is **no recording overlay window** — recording state is
-  shown by the menu-bar icon (blinking red).
+  At record start we remember the frontmost app; on finish we restore focus to
+  it, put the transcript on the clipboard, and send Cmd+V. We **always paste** —
+  AX-based "is an editable field focused?" detection was tried and removed
+  because it's unreliable in Electron/web apps (e.g. VS Code reports no text
+  role). The transcript is **left on the clipboard** as a universal fallback.
+  Only when Accessibility is *not* granted (can't synthesize Cmd+V) do we show
+  the result popup.
+- **Zero-config / no settings UI.** The app is out-of-the-box: language defaults
+  to `auto`, model to the app-support path. Advanced options (`model_path`,
+  `language`, `vocabulary`, `snippets`) are read from `config.json` if present,
+  but there is no settings window — don't re-add one without asking.
+- **One cohesive `internal/app` package** owns the state machine and the Fyne UI
+  (menu-bar item + result popup). UI mutations run on Fyne's main loop via
+  `fyne.Do`. There is **no recording overlay window** — recording state is shown
+  by the menu-bar icon (blinking red). The menu has a single **Quit** item.
 - **Windows are forced light** with a **black accent** (the logo colour), not
   Fyne's default dark theme + blue. This is a deliberate custom theme
   (`internal/app/theme.go`, `silentTheme`) set in `New`; don't revert it to the
@@ -73,7 +79,7 @@ internal/transcribe  whisper.cpp wrapper (cgo: cwhisper.h/.c + transcribe.go)
 internal/cleanup     whitespace-only transcript tidy
 internal/snippets    post-transcription text expansion (spoken phrase → replacement)
 internal/paste       clipboard save/restore + Cmd+V + focus detection (cpaste.h/.m + paste.go)
-internal/app         state machine + menu-bar/popup/settings UI (app.go, ui.go)
+internal/app         state machine + menu-bar item & result popup (app.go, ui.go, theme.go)
 build/               Info.plist, entitlements, Makefile helpers, icon generator, signing script
 build/icongen        renders icons from the S monogram
 build/logo-source.svg  source of truth for the icon shape

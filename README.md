@@ -48,33 +48,33 @@ On first use macOS will ask for two permissions:
 The right ⌘ key still works normally as a modifier in keyboard shortcuts; only a
 quick standalone tap triggers dictation.
 
-## Settings
+The transcript is pasted as Whisper produces it (it already punctuates and
+capitalizes) — the only processing is whitespace trimming and your snippet
+expansions. The transcript is also left on the clipboard, so if it lands nowhere
+you can paste it manually. No LLM ever rewrites your words.
 
-Open **Settings…** from the menu-bar icon to configure:
+## Configuration
 
-- **Model** — path to the ggml model (with a file picker).
-- **Language** — *Auto-detect* (default) or a specific language. The model is
-  multilingual, so auto-detect transcribes whatever you speak.
-- **Custom words** — names/jargon/acronyms to recognize more accurately
-  (biases whisper via its initial prompt).
-- **Snippets** — spoken phrase → replacement text, e.g. `my email = hello@kzkr.dev`.
+SilentRec is zero-config — it just works out of the box (auto-detect language,
+always paste). There is no settings window. Power users can optionally edit
+`~/Library/Application Support/SilentRec/config.json`:
 
-The transcript is always auto-pasted into the focused field (or shown in a popup
-if nothing editable is focused), as Whisper produces it (it already punctuates
-and capitalizes) — the only processing is whitespace trimming and your snippet
-expansions. No LLM ever rewrites your words.
+- `language` — `"auto"` (default) or a code like `"en"` / `"fr"`.
+- `model_path` — path to a different ggml model.
+- `vocabulary` — array of names/jargon to recognize better (whisper prompt bias).
+- `snippets` — object of `"spoken phrase": "replacement"` text expansions.
 
 ## Project layout
 
 ```
 cmd/silentrec        entrypoint
-internal/config      load/save settings
+internal/config      load settings (zero-config defaults; optional config.json)
 internal/hotkey      right-⌘ tap detection (CGEventTap)
 internal/audio       microphone capture (malgo) → 16 kHz mono
 internal/transcribe  whisper.cpp wrapper (cgo, static libs)
 internal/cleanup     whitespace trimming of the transcript
 internal/snippets    spoken-phrase → replacement text expansion
-internal/paste       clipboard save/restore + synthesized Cmd+V
-internal/app         state machine + menu-bar/overlay/popup/settings UI
+internal/paste       clipboard + synthesized Cmd+V (always paste)
+internal/app         state machine + menu-bar item & result popup
 third_party          vendored whisper.cpp (built by `make whisper`)
 ```
