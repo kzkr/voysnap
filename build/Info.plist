@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleName</key>
-	<string>Voysnap</string>
+	<string>VoySnap</string>
 	<key>CFBundleDisplayName</key>
-	<string>Voysnap</string>
+	<string>VoySnap</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.kzkr.voysnap</string>
 	<key>CFBundleExecutable</key>
@@ -27,6 +27,6 @@
 	<true/>
 	<!-- Shown in the macOS microphone permission prompt on first recording. -->
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Voysnap records your microphone to transcribe your speech to text on-device.</string>
+	<string>VoySnap records your microphone to transcribe your speech to text on-device.</string>
 </dict>
 </plist>

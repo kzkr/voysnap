@@ -31,7 +31,7 @@ func HasPasteTarget() bool {
 	return !bool(C.voysnap_frontmost_is_finder())
 }
 
-// AccessibilityTrusted reports whether Voysnap may synthesize keystrokes. When
+// AccessibilityTrusted reports whether VoySnap may synthesize keystrokes. When
 // prompt is true and it is not trusted, macOS opens the permission dialog.
 func AccessibilityTrusted(prompt bool) bool {
 	return bool(C.voysnap_accessibility_trusted(C.bool(prompt)))

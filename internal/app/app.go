@@ -78,7 +78,7 @@ func New() (*App, error) {
 	fa := fyneapp.NewWithID("com.kzkr.voysnap")
 	desk, ok := fa.(desktop.App)
 	if !ok {
-		return nil, fmt.Errorf("Voysnap requires a desktop environment with a system tray")
+		return nil, fmt.Errorf("VoySnap requires a desktop environment with a system tray")
 	}
 	// White windows with a black accent, matching the logo (not the dark theme).
 	fa.Settings().SetTheme(voysnapTheme{})
@@ -119,16 +119,16 @@ func New() (*App, error) {
 	// hasn't been granted yet.
 	if !paste.AccessibilityTrusted(false) {
 		paste.AccessibilityTrusted(true)
-		log.Printf("grant Accessibility permission to Voysnap for auto-paste, then relaunch")
+		log.Printf("grant Accessibility permission to VoySnap for auto-paste, then relaunch")
 	}
 
 	hk, err := hotkey.New(cfg.Hotkey, a.onHotkey)
 	if err != nil {
 		if errors.Is(err, hotkey.ErrNotTrusted) {
 			// Trigger the macOS Accessibility prompt; the tap works after the
-			// user grants permission and relaunches Voysnap.
+			// user grants permission and relaunches VoySnap.
 			paste.AccessibilityTrusted(true)
-			log.Printf("hotkey: grant Accessibility permission to Voysnap, then relaunch")
+			log.Printf("hotkey: grant Accessibility permission to VoySnap, then relaunch")
 		} else {
 			log.Printf("hotkey: %v", err)
 		}
@@ -241,7 +241,7 @@ func (a *App) toIdle() {
 // installMenu sets the (static) menu-bar menu. Recording state is conveyed by
 // the icon, not by menu text.
 func (a *App) installMenu() {
-	menu := fyne.NewMenu("Voysnap",
+	menu := fyne.NewMenu("VoySnap",
 		fyne.NewMenuItem("Quit", func() { a.fyne.Quit() }),
 	)
 	fyne.Do(func() { a.desk.SetSystemTrayMenu(menu) })

@@ -1,12 +1,12 @@
-# Voysnap — local offline voice-to-text dictation for macOS.
+# VoySnap — local offline voice-to-text dictation for macOS.
 #
 # Common flow:
 #   make whisper   # one-time: clone + build whisper.cpp static libs (Metal)
 #   make model     # one-time: download the default speech model
-#   make app       # build the Go binary, assemble Voysnap.app, ad-hoc codesign
+#   make app       # build the Go binary, assemble VoySnap.app, ad-hoc codesign
 #   make run       # launch the app (menu-bar icon appears)
 
-APP_NAME    := Voysnap
+APP_NAME    := VoySnap
 BUNDLE_ID   := com.kzkr.voysnap
 EXECUTABLE  := voysnap
 
@@ -97,7 +97,7 @@ icon:
 	rm -f build/icon.icns internal/app/tray-idle.png internal/app/tray-rec.png
 	$(MAKE) build/icon.icns internal/app/tray-idle.png internal/app/tray-rec.png
 
-## bundle: assemble dist/Voysnap.app around the built binary.
+## bundle: assemble dist/VoySnap.app around the built binary.
 bundle: build build/icon.icns
 	@rm -rf $(APP_DIR)
 	@mkdir -p $(MACOS_DIR) $(RES_DIR)
@@ -136,7 +136,7 @@ run: app model
 	@killall $(EXECUTABLE) 2>/dev/null || true
 	open $(APP_DIR)
 
-## install: copy Voysnap.app into /Applications so it launches like any other app.
+## install: copy VoySnap.app into /Applications so it launches like any other app.
 install: app model
 	@killall $(EXECUTABLE) 2>/dev/null || true
 	rm -rf /Applications/$(APP_NAME).app

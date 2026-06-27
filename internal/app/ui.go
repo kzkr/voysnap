@@ -9,14 +9,14 @@ import (
 )
 
 // showResult displays transcribed text in a small window. This is the fallback
-// used when Voysnap can't paste (Accessibility not granted); the text is also
+// used when VoySnap can't paste (Accessibility not granted); the text is also
 // on the clipboard.
 func (a *App) showResult(text string) {
 	fyne.Do(func() {
-		w := a.fyne.NewWindow("Voysnap — Transcript")
+		w := a.fyne.NewWindow("VoySnap — Transcript")
 
 		logo := container.NewGridWrap(fyne.NewSize(34, 34), widget.NewIcon(a.iconIdle))
-		title := widget.NewRichTextFromMarkdown("## Voysnap")
+		title := widget.NewRichTextFromMarkdown("## VoySnap")
 		header := container.NewHBox(logo, title)
 
 		entry := widget.NewMultiLineEntry()

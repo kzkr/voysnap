@@ -7,7 +7,7 @@ import (
 	"fyne.io/fyne/v2/theme"
 )
 
-// brandColor is the black from the Voysnap logo, used as the accent instead of
+// brandColor is the black from the VoySnap logo, used as the accent instead of
 // Fyne's default blue.
 var brandColor = color.NRGBA{R: 0x1a, G: 0x1a, B: 0x1a, A: 0xff}
 

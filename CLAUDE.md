@@ -4,7 +4,7 @@ Guidance for working in this repo. Read this before making changes.
 
 ## What this is
 
-**Voysnap** — a free, fully-local, offline voice-to-text dictation menu-bar app
+**VoySnap** — a free, fully-local, offline voice-to-text dictation menu-bar app
 for macOS. Tap the **right ⌘ key** to start recording, tap it again to stop; the
 audio is transcribed on-device with whisper.cpp (Metal), lightly cleaned, and
 pasted into whatever text field is focused. If nothing editable is focused, the
@@ -13,10 +13,17 @@ text is shown in a popup (and left on the clipboard).
 It's a personal project of Valentin's "South Computer Company" lab — a local,
 owned replacement for paid tools like Superwhisper / Wispr Flow.
 
-> Naming note: the project was renamed "Voice" → "SilentRec" → **Voysnap**. The
-> Go module is `github.com/kzkr/voysnap` and the bundle id is
-> `com.kzkr.voysnap`. The **directory on disk is unchanged** — that's fine; don't
-> rename it (tooling paths depend on it).
+> Naming note: the project was renamed "Voice" → "SilentRec" → "Voysnap" →
+> **VoySnap** (capital S). The **display name** ("VoySnap") lives in `APP_NAME`
+> (Makefile), `appName` (config.go), `Info.plist`, and the UI. The **lowercase
+> infra identifiers stay as-is on purpose**: the Go module
+> `github.com/kzkr/voysnap`, the bundle id `com.kzkr.voysnap`, and the signing
+> identity "Voysnap Local Dev" — changing the bundle id or signing identity
+> resets TCC permissions, and the module matches the GitHub repo URL. The
+> app-support folder is `…/VoySnap`; the casing change from "Voysnap" is cosmetic
+> on macOS's default case-insensitive filesystem (same directory, no migration).
+> The **source directory on disk is unchanged** — don't rename it (tooling paths
+> depend on it).
 
 ## Platform & constraints
 
@@ -78,7 +85,7 @@ owned replacement for paid tools like Superwhisper / Wispr Flow.
 
 ```
 cmd/voysnap        entrypoint (main)
-internal/config      load/save settings (~/Library/Application Support/Voysnap/config.json)
+internal/config      load/save settings (~/Library/Application Support/VoySnap/config.json)
 internal/hotkey      right-⌘ tap detection (CGEventTap; chotkey.h/.m + hotkey.go)
 internal/audio       mic capture via malgo → 16 kHz mono float32
 internal/transcribe  whisper.cpp wrapper (cgo: cwhisper.h/.c + transcribe.go)
@@ -99,7 +106,7 @@ models/              downloaded model (gitignored)
 make install        # everything: signing identity + whisper.cpp + model + build + install
 make run            # same, but launches from dist/ instead of installing
 make whisper        # (sub-step) clone + build whisper.cpp static libs (Metal)
-make model          # (sub-step) download the model into ~/Library/Application Support/Voysnap/models
+make model          # (sub-step) download the model into ~/Library/Application Support/VoySnap/models
 make icon           # force-regenerate all icons from build/logo-source.svg
 ```
 
@@ -129,7 +136,7 @@ libs to exist, since the cgo in `internal/transcribe` links them via
   The app prompts for Accessibility on launch if missing.
 - **Changing the bundle id resets all TCC permissions** (the user must re-grant).
   Avoid changing `com.kzkr.voysnap` unless necessary.
-- **Launch via `open Voysnap.app`, not by running the binary directly.** Running
+- **Launch via `open VoySnap.app`, not by running the binary directly.** Running
   the binary from a terminal makes macOS attribute permissions to the terminal,
   not the app, giving false "not trusted" results.
 - **Menu-bar icon coloring:** Fyne renders a tray icon as an adaptive *template*
