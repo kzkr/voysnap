@@ -30,7 +30,7 @@ MODEL_NAME  := ggml-large-v3-turbo.bin
 MODEL_URL   := https://huggingface.co/ggerganov/whisper.cpp/resolve/main/$(MODEL_NAME)
 MODEL_PATH  := $(MODELS_DIR)/$(MODEL_NAME)
 
-.PHONY: all app build bundle sign run install icon whisper model clean clean-app
+.PHONY: all app build bundle sign signing-identity run install icon whisper model clean clean-app
 
 all: app
 
@@ -106,13 +106,17 @@ bundle: build build/icon.icns
 	cp build/icon.icns $(RES_DIR)/icon.icns
 	@echo ">> bundled $(APP_DIR)"
 
-# Use the stable self-signed identity from setup-signing.sh when present; this
-# keeps TCC permission grants across rebuilds. Falls back to ad-hoc ("-").
+# Stable self-signed identity that keeps TCC permission grants across rebuilds.
 SIGN_IDENTITY := SilentRec Local Dev
 SIGN_KEYCHAIN := silentrec-signing.keychain-db
 
+## signing-identity: create the stable self-signed identity if missing (idempotent).
+signing-identity:
+	@security find-identity "$(SIGN_KEYCHAIN)" 2>/dev/null | grep -q "$(SIGN_IDENTITY)" \
+		|| bash build/setup-signing.sh
+
 ## sign: codesign with the stable identity (or ad-hoc) so TCC grants persist.
-sign: bundle
+sign: signing-identity bundle
 	@if security find-identity "$(SIGN_KEYCHAIN)" 2>/dev/null | grep -q "$(SIGN_IDENTITY)"; then \
 		echo ">> signing with '$(SIGN_IDENTITY)'"; \
 		security unlock-keychain -p silentrec "$(SIGN_KEYCHAIN)" 2>/dev/null || true; \

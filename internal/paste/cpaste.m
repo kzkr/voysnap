@@ -3,8 +3,9 @@
 
 #include "cpaste.h"
 
-// pid of the app that was frontmost when recording started.
+// State about the app that was frontmost when recording started.
 static pid_t gFrontmostPID = -1;
+static bool gFrontmostIsFinder = false;
 
 void silentrec_clipboard_set(const char *text) {
   NSPasteboard *pb = [NSPasteboard generalPasteboard];
@@ -39,6 +40,11 @@ void silentrec_remember_frontmost(void) {
   NSRunningApplication *app =
       [[NSWorkspace sharedWorkspace] frontmostApplication];
   gFrontmostPID = app ? [app processIdentifier] : -1;
+  NSString *bid = app ? [app bundleIdentifier] : nil;
+  // No frontmost app, or the Finder (which is what's "frontmost" on the desktop),
+  // means there's nowhere to paste.
+  gFrontmostIsFinder =
+      (bid == nil) || [bid isEqualToString:@"com.apple.finder"];
 }
 
 void silentrec_restore_frontmost(void) {
@@ -49,6 +55,14 @@ void silentrec_restore_frontmost(void) {
       [NSRunningApplication runningApplicationWithProcessIdentifier:gFrontmostPID];
   [app activateWithOptions:NSApplicationActivateAllWindows];
 }
+
+// silentrec_frontmost_is_finder reports whether the app frontmost at the last
+// silentrec_remember_frontmost call was the Finder/desktop (i.e. nowhere to
+// paste). We use the frontmost app's bundle id rather than the Accessibility API
+// because AX can't tell a pasteable app from the desktop: Electron apps (VS Code)
+// expose neither a focused element nor window, while the desktop exposes both —
+// so every AX signal gets these two cases backwards.
+bool silentrec_frontmost_is_finder(void) { return gFrontmostIsFinder; }
 
 bool silentrec_accessibility_trusted(bool prompt) {
   NSDictionary *opts =

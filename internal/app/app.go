@@ -1,10 +1,10 @@
 // Package app wires the components together and owns the recording state
-// machine and all UI (menu-bar item, result popup, settings).
+// machine and the UI (menu-bar item and result popup).
 //
 // Flow: a global hotkey toggles between idle and recording. While recording the
 // menu-bar icon blinks red; on stop, audio is transcribed with whisper, lightly
-// cleaned, then pasted into the previously focused app (or shown in a popup when
-// no editable field was focused).
+// cleaned, then pasted into the frontmost app (or shown in a popup when that app
+// is the Finder/desktop, where there's nowhere to paste).
 package app
 
 import (
@@ -63,6 +63,10 @@ type App struct {
 
 	mu    sync.Mutex
 	state state
+
+	// hadPasteTarget records whether the frontmost app at record start can
+	// receive a paste (vs. the Finder/desktop); decides paste vs. popup.
+	hadPasteTarget bool
 
 	// blinkStop stops the recording blink goroutine (guarded by mu).
 	blinkStop chan struct{}
@@ -170,7 +174,12 @@ func (a *App) onHotkey() {
 }
 
 func (a *App) startRecording() {
-	paste.RememberTarget() // so focus can be restored before pasting
+	// Capture the frontmost app on the main thread (NSWorkspace is best used
+	// there; the hotkey callback runs on the event-tap thread).
+	fyne.DoAndWait(func() {
+		paste.RememberTarget()
+		a.hadPasteTarget = paste.HasPasteTarget()
+	})
 	if err := a.recorder.Start(); err != nil {
 		log.Printf("record start: %v", err)
 		a.toIdle()
@@ -208,11 +217,11 @@ func (a *App) finish() {
 		return
 	}
 
-	// Always paste into wherever the cursor is. The transcript is also left on
-	// the clipboard (see paste.PasteText) so nothing is lost if it lands nowhere.
-	// Only when Accessibility is missing (can't synthesize Cmd+V) do we fall
-	// back to showing the text in a popup.
-	if paste.AccessibilityTrusted(false) {
+	// Paste into the frontmost app; but on the Finder/desktop there's nowhere to
+	// paste, so show the transcript in a popup instead of firing a Cmd+V that
+	// just beeps. The transcript is left on the clipboard either way (see
+	// paste.PasteText / SetClipboard).
+	if a.hadPasteTarget {
 		paste.PasteText(text)
 		return
 	}

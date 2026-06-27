@@ -15,6 +15,10 @@ void silentrec_remember_frontmost(void);
 // Reactivates the application remembered by silentrec_remember_frontmost.
 void silentrec_restore_frontmost(void);
 
+// Reports whether the app frontmost at the last silentrec_remember_frontmost
+// call was the Finder/desktop (i.e. there's nowhere to paste).
+bool silentrec_frontmost_is_finder(void);
+
 // Reports whether this process is trusted for Accessibility. When prompt is
 // true, macOS shows the "open System Settings" dialog if it is not.
 bool silentrec_accessibility_trusted(bool prompt);

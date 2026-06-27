@@ -1,9 +1,9 @@
-// Package paste delivers transcribed text to the focused application.
+// Package paste delivers transcribed text to the frontmost application.
 //
 // It restores focus to the app that was frontmost when recording started, puts
-// the text on the clipboard, synthesizes Cmd+V, then restores the previous
-// clipboard contents. All macOS interaction goes through a small Objective-C
-// shim (cpaste.m).
+// the text on the clipboard, and synthesizes Cmd+V. The text is left on the
+// clipboard as a fallback. All macOS interaction goes through a small
+// Objective-C shim (cpaste.m).
 package paste
 
 /*
@@ -22,6 +22,13 @@ import (
 // pasting. Call this the moment recording starts.
 func RememberTarget() {
 	C.silentrec_remember_frontmost()
+}
+
+// HasPasteTarget reports whether the frontmost app (at the last RememberTarget)
+// can receive a paste — true for normal apps, false for the Finder/desktop.
+// When false, show the transcript in a popup instead of pasting.
+func HasPasteTarget() bool {
+	return !bool(C.silentrec_frontmost_is_finder())
 }
 
 // AccessibilityTrusted reports whether SilentRec may synthesize keystrokes. When

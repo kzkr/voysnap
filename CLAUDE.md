@@ -47,13 +47,19 @@ owned replacement for paid tools like Superwhisper / Wispr Flow.
   key (keycode 54) and ignores it when used as a modifier in a shortcut, so the
   key keeps working normally. This is why we don't use `golang.design/x/hotkey`.
 - **Paste = clipboard + synthesized Cmd+V, with focus restore** (`internal/paste`).
-  At record start we remember the frontmost app; on finish we restore focus to
-  it, put the transcript on the clipboard, and send Cmd+V. We **always paste** —
-  AX-based "is an editable field focused?" detection was tried and removed
-  because it's unreliable in Electron/web apps (e.g. VS Code reports no text
-  role). The transcript is **left on the clipboard** as a universal fallback.
-  Only when Accessibility is *not* granted (can't synthesize Cmd+V) do we show
-  the result popup.
+  At record start we remember the frontmost app and whether it can receive a
+  paste (`HasPasteTarget`). On finish: paste into the frontmost app, *unless* it
+  was the **Finder/desktop**, in which case show the result popup (and leave the
+  text on the clipboard) instead of firing a Cmd+V that just beeps.
+  - **Why bundle-id, not Accessibility:** we deliberately do **not** use the AX
+    API to decide paste-vs-popup. Three AX signals were tried (focused element,
+    settable value, focused window) and all get VS Code and the desktop
+    *backwards*: Electron apps (VS Code) expose neither a focused element nor
+    window, while the desktop (Finder) exposes both. So we paste into everything
+    except when the frontmost app's bundle id is `com.apple.finder`. The
+    frontmost app is captured on the **main thread** (`fyne.DoAndWait`) since
+    even `NSWorkspace` is best used there. (Accessibility is still required, but
+    only for the event tap and synthesizing Cmd+V — not for this decision.)
 - **Zero-config / no settings UI.** The app is out-of-the-box: language defaults
   to `auto`, model to the app-support path. Advanced options (`model_path`,
   `language`, `vocabulary`, `snippets`) are read from `config.json` if present,
@@ -90,19 +96,19 @@ models/              downloaded model (gitignored)
 ## Build & run
 
 ```sh
-./build/setup-signing.sh   # one-time: create the stable signing identity
-make install        # builds whisper.cpp, pulls the model, builds + installs the app
+make install        # everything: signing identity + whisper.cpp + model + build + install
 make run            # same, but launches from dist/ instead of installing
 make whisper        # (sub-step) clone + build whisper.cpp static libs (Metal)
 make model          # (sub-step) download the model into ~/Library/Application Support/SilentRec/models
 make icon           # force-regenerate all icons from build/logo-source.svg
 ```
 
-`build` depends on `$(WHISPER_LIB)`, so `make run`/`install` auto-build
-whisper.cpp on a fresh checkout (first run is slow). `run`/`install` also depend
-on `model`, which downloads the ~1.5 GB model (idempotent — skipped if present)
-into the app-support models dir where the default config looks for it. The model
-and `third_party/whisper.cpp` are gitignored, not committed.
+`make install`/`run` are fully self-contained for a fresh clone: `sign` depends
+on `signing-identity` (runs `build/setup-signing.sh`, idempotent — creates the
+stable self-signed identity once), `build` depends on `$(WHISPER_LIB)` (clones +
+builds whisper.cpp), and both depend on `model` (downloads the ~1.5 GB model,
+skipped if present, into the app-support models dir the default config points
+at). The model and `third_party/whisper.cpp` are gitignored, not committed.
 
 Note: a bare `go build ./...` (without `make`) still needs the whisper static
 libs to exist, since the cgo in `internal/transcribe` links them via

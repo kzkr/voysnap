@@ -3,61 +3,70 @@
 A free, fully-local, offline voice-to-text dictation app for macOS. Tap the
 **right ⌘ key** (to the right of the space bar) to start recording, tap it again
 to stop — the audio is transcribed on-device with [whisper.cpp](https://github.com/ggerganov/whisper.cpp)
-(Metal-accelerated), lightly cleaned up, and pasted into whatever text field you
-were focused on. If no field is focused, the text appears in a popup (and is
-copied to the clipboard).
+(Metal-accelerated) and pasted into whatever text field you're in. If nothing is
+focused, the transcript pops up in a small window. Either way it's also left on
+the clipboard.
 
-No cloud, no accounts, no word limits, no subscription.
+Speak **any language** — it auto-detects (English, French, Spanish, …) and writes
+it back in that language. No cloud, no accounts, no word limits, no subscription.
 
 ## Requirements
 
 - macOS 13+ on Apple Silicon
-- Go 1.24+, `cmake`, Xcode command-line tools (`xcode-select --install`)
+- [Homebrew](https://brew.sh), Go 1.24+, `cmake` (`brew install cmake`), and the
+  Xcode command-line tools (`xcode-select --install`)
 
-## Build & run
+## Install
 
 ```sh
-./build/setup-signing.sh  # one-time: stable signing identity (keeps permissions across rebuilds)
-make install              # builds whisper.cpp, pulls the model (~1.5GB), builds & installs the app
-# or: make run            # same, but launches from dist/ without installing
+git clone git@github.com:kzkr/silentrec.git
+cd silentrec
+make install
 ```
 
-The first build is slow: it clones and compiles whisper.cpp and downloads the
-~1.5 GB model into `~/Library/Application Support/SilentRec/models/`. Subsequent
-builds skip both. Point at a different model any time in **Settings**.
+That's it. `make install` does everything: creates a stable signing identity,
+builds whisper.cpp (Metal), downloads the model (~1.5 GB), builds the app, and
+installs **SilentRec.app** to `/Applications`. The first run is slow (it compiles
+whisper.cpp and downloads the model into `~/Library/Application Support/SilentRec/`);
+later builds skip both.
 
-Once installed, launch SilentRec like any other app and keep it in the Dock. A
-microphone icon appears in the menu bar.
+Use `make run` instead to launch from `dist/` without installing.
+
+Launch SilentRec like any other app (Launchpad/Spotlight) and keep it in the
+Dock if you like. A microphone icon appears in the menu bar.
 
 ## Permissions (granted once)
 
-On first use macOS will ask for two permissions:
+On first launch macOS asks for two permissions:
 
-- **Microphone** — to record your voice (prompted the first time you record).
-- **Accessibility** — to detect the right-⌘ tap and to paste via Cmd+V.
-  Grant it under *System Settings → Privacy & Security → Accessibility*, then
-  relaunch SilentRec.
+- **Microphone** — to record your voice.
+- **Accessibility** — to detect the right-⌘ tap and to paste via Cmd+V. Enable
+  **SilentRec** under *System Settings → Privacy & Security → Accessibility*,
+  then relaunch.
+
+Because the app is signed with a stable identity, these grants persist across
+rebuilds.
 
 ## Usage
 
-1. Focus a text field (e.g. in VS Code).
+1. Put your cursor in a text field (any app).
 2. Tap the **right ⌘** key — the menu-bar icon blinks red.
 3. Speak.
 4. Tap **right ⌘** again — SilentRec transcribes and pastes the text.
 
-The right ⌘ key still works normally as a modifier in keyboard shortcuts; only a
-quick standalone tap triggers dictation.
+The right ⌘ key still works normally as a modifier in shortcuts; only a quick
+standalone tap triggers dictation. If nothing is focused (e.g. the desktop), the
+transcript appears in a popup instead of being pasted.
 
-The transcript is pasted as Whisper produces it (it already punctuates and
+The text is pasted exactly as Whisper produces it (it already punctuates and
 capitalizes) — the only processing is whitespace trimming and your snippet
-expansions. The transcript is also left on the clipboard, so if it lands nowhere
-you can paste it manually. No LLM ever rewrites your words.
+expansions. No LLM ever rewrites your words.
 
 ## Configuration
 
-SilentRec is zero-config — it just works out of the box (auto-detect language,
-always paste). There is no settings window. Power users can optionally edit
-`~/Library/Application Support/SilentRec/config.json`:
+SilentRec is zero-config — it works out of the box (auto-detect language, paste
+where your cursor is). There is no settings window. Power users can optionally
+edit `~/Library/Application Support/SilentRec/config.json`:
 
 - `language` — `"auto"` (default) or a code like `"en"` / `"fr"`.
 - `model_path` — path to a different ggml model.
@@ -74,7 +83,12 @@ internal/audio       microphone capture (malgo) → 16 kHz mono
 internal/transcribe  whisper.cpp wrapper (cgo, static libs)
 internal/cleanup     whitespace trimming of the transcript
 internal/snippets    spoken-phrase → replacement text expansion
-internal/paste       clipboard + synthesized Cmd+V (always paste)
+internal/paste       clipboard + synthesized Cmd+V; popup fallback on the desktop
 internal/app         state machine + menu-bar item & result popup
-third_party          vendored whisper.cpp (built by `make whisper`)
+build/               Info.plist, signing script, icon generator, logo source
+third_party          vendored whisper.cpp (built by make; gitignored)
 ```
+
+## License
+
+Personal project by [kzkr](https://github.com/kzkr) — South Computer Company.

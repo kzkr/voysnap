@@ -14,7 +14,11 @@ KEYCHAIN_PASS="silentrec"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 
-if security find-identity -v -p codesigning 2>/dev/null | grep -q "$IDENTITY"; then
+# Idempotent: if the identity already exists in our keychain, do nothing. (Check
+# the keychain directly, not `find-identity -v`, since a self-signed cert is not
+# "valid" and would never match — which would regenerate it every run and reset
+# all TCC permissions.)
+if security find-identity "$KEYCHAIN" 2>/dev/null | grep -q "$IDENTITY"; then
 	echo ">> identity '$IDENTITY' already exists; nothing to do"
 	exit 0
 fi
